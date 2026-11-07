@@ -8,4 +8,4 @@ npm-debug.log*
 .env*.local
 .vercel
 extract.txt
-scratch_dev.log
+scratch_*.log
