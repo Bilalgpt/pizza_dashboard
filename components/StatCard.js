@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { formatMoney, formatNum } from "@/lib/data";
+import CountUp from "@/components/CountUp";
 
 function Spark({ data, up }) {
   const max = Math.max(...data);
@@ -56,7 +57,7 @@ export default function StatCard({ kpi, index = 0, icon: Icon }) {
     setT({ rx: 0, ry: 0, gx: 50, gy: 0 });
   }
 
-  const display = kpi.money ? formatMoney(kpi.value) : formatNum(kpi.value);
+  const fmt = kpi.money ? formatMoney : (x) => formatNum(Math.round(x));
 
   return (
     <motion.div
@@ -97,7 +98,7 @@ export default function StatCard({ kpi, index = 0, icon: Icon }) {
         <div className="relative mt-5 flex items-end justify-between">
           <div>
             <div className="text-[32px] font-bold leading-none tracking-tight text-white">
-              {display}
+              <CountUp value={kpi.value} format={fmt} delay={index * 0.07 + 0.25} />
             </div>
             <div className="mt-2 text-sm text-ink-secondary">{kpi.label}</div>
             <div className="mt-0.5 text-[11px] text-ink-muted">{kpi.hint}</div>
