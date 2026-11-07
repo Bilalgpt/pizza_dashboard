@@ -34,7 +34,7 @@ export default function Topbar() {
 
           <div className="flex items-center gap-2.5 rounded-xl border border-white/8 bg-white/5 py-1.5 pl-1.5 pr-3">
             <div className="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-wa-green to-wa-teal text-xs font-bold text-black">
-              TP
+              {brand.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
             </div>
             <div className="hidden leading-tight sm:block">
               <div className="text-xs font-semibold text-white">Admin</div>
