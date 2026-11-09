@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, CalendarRange, Target, Sparkles, Clock, Users, Package, Send } from "lucide-react";
+import { TrendingUp, CalendarRange, Target, Sparkles, Clock, Users, Package, Send, Boxes, Rotate3d } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import Panel from "@/components/Panel";
 import ForecastChart from "@/components/charts/ForecastChart";
@@ -8,7 +8,31 @@ import ItemTrendLines from "@/components/charts/ItemTrendLines";
 import SeasonHeatmap from "@/components/charts/SeasonHeatmap";
 import HourlyOrders from "@/components/charts/HourlyOrders";
 import PeakHeatmap from "@/components/charts/PeakHeatmap";
-import { forecastSummary, seasonalUplift, peakSummary, sendWindows } from "@/lib/data";
+import dynamic from "next/dynamic";
+import {
+  forecastSummary,
+  seasonalUplift,
+  peakSummary,
+  sendWindows,
+  peakDays,
+  peakSlots,
+  peakHeatmap,
+  seasons,
+  seasonHeatmap,
+} from "@/lib/data";
+
+// WebGL 3D chart — client-only (echarts-gl needs window), skip SSR.
+const Bar3D = dynamic(() => import("@/components/charts/Bar3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-[420px] place-items-center text-sm text-ink-muted">
+      Loading 3D view…
+    </div>
+  ),
+});
+
+const peakMatrix = peakHeatmap.map((r) => r.values);
+const seasonMatrix = seasonHeatmap.map((r) => r.values);
 
 const PEAK_ICONS = [Clock, Clock, Clock, Users];
 
@@ -134,6 +158,67 @@ export default function TrendsPage() {
         <Panel title="Busy hours by day of week" subtitle="Order intensity (0–100) per time slot">
           <PeakHeatmap />
         </Panel>
+      </div>
+
+      {/* 3D bar chart — peak order times (WebGL via echarts-gl) */}
+      <div className="scene mt-5">
+        <section className="glass sheen relative overflow-hidden rounded-3xl">
+          <div className="flex items-start justify-between gap-3 px-6 pt-5">
+            <div>
+              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-white">
+                <Boxes className="h-4 w-4 text-wa-mint" /> Peak demand — 3D view
+              </h3>
+              <p className="mt-0.5 text-xs text-ink-muted">
+                Day × time-slot × order intensity — the demand landscape across the week
+              </p>
+            </div>
+            <span className="flex items-center gap-1.5 rounded-full bg-wa-green/12 px-2.5 py-1 text-xs font-semibold text-wa-mint">
+              <Rotate3d className="h-3.5 w-3.5" /> Interactive
+            </span>
+          </div>
+          <div className="px-3 pb-3 pt-2">
+            <Bar3D
+              xLabels={peakSlots}
+              yLabels={peakDays}
+              matrix={peakMatrix}
+              max={100}
+              valueLabel="Intensity"
+            />
+          </div>
+          <p className="px-6 pb-5 text-xs text-ink-muted">
+            The tallest ridge is the <span className="text-wa-mint">Fri–Sat evening rush</span> — rotate to
+            compare it against the quieter weekday afternoons. The 2D heatmap above is the exact-value reference.
+          </p>
+        </section>
+      </div>
+
+      {/* 3D bar chart — seasonal popularity */}
+      <div className="scene mt-5">
+        <section className="glass sheen relative overflow-hidden rounded-3xl">
+          <div className="flex items-start justify-between gap-3 px-6 pt-5">
+            <div>
+              <h3 className="flex items-center gap-2 text-[15px] font-semibold text-white">
+                <Boxes className="h-4 w-4 text-wa-mint" /> Seasonal popularity — 3D view
+              </h3>
+              <p className="mt-0.5 text-xs text-ink-muted">
+                Dish × season × popularity index — which items spike in which season
+              </p>
+            </div>
+            <span className="flex items-center gap-1.5 rounded-full bg-series-1/15 px-2.5 py-1 text-xs font-semibold text-series-1">
+              <Rotate3d className="h-3.5 w-3.5" /> Interactive
+            </span>
+          </div>
+          <div className="px-3 pb-3 pt-2">
+            <Bar3D
+              xLabels={seasons}
+              yLabels={seasonHeatmap.map((r) => r.item)}
+              matrix={seasonMatrix}
+              max={100}
+              valueLabel="Popularity"
+              ramp={["#16263b", "#1d3a5a", "#235181", "#256abf", "#3987e5", "#6da7ec"]}
+            />
+          </div>
+        </section>
       </div>
 
       {/* best send windows → campaigns */}
