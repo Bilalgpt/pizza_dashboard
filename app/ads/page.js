@@ -3,6 +3,7 @@
 import { Sparkles, Clapperboard, Clock, Layers3, Wand2, Share2 } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import Panel from "@/components/Panel";
+import Motion3D from "@/components/Motion3D";
 import { aiAds, adStats } from "@/lib/data";
 
 const STAT_ICONS = { creatives: Clapperboard, cost: Wand2, turnaround: Clock, formats: Share2 };
@@ -69,17 +70,17 @@ export default function AdsPage() {
 
       {/* stat row */}
       <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {adStats.map((s) => {
+        {adStats.map((s, i) => {
           const Icon = STAT_ICONS[s.key] || Layers3;
           return (
-            <div key={s.key} className="glass sheen relative overflow-hidden rounded-2xl p-5">
+            <Motion3D key={s.key} delay={i * 0.06} maxTilt={7} className="glass sheen relative overflow-hidden rounded-2xl p-5">
               <div className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-wa-green/10">
                 <Icon className="h-5 w-5 text-wa-mint" strokeWidth={2} />
               </div>
               <div className="mt-4 text-[22px] font-bold leading-none text-white">{s.value}</div>
               <div className="mt-1.5 text-sm text-ink-secondary">{s.label}</div>
               <div className="text-[11px] text-ink-muted">{s.sub}</div>
-            </div>
+            </Motion3D>
           );
         })}
       </div>
@@ -111,13 +112,17 @@ export default function AdsPage() {
         <span className="text-xs text-ink-muted">· {rest.length} more</span>
       </div>
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {rest.map((ad) => (
-          <div key={ad.key} className="glass sheen relative overflow-hidden rounded-2xl p-3">
+        {rest.map((ad, i) => (
+          <Motion3D
+            key={ad.key}
+            delay={i * 0.08}
+            className="glass sheen relative overflow-hidden rounded-2xl p-3"
+          >
             <AdVideo ad={ad} />
             <div className="p-3 pt-4">
               <AdMeta ad={ad} />
             </div>
-          </div>
+          </Motion3D>
         ))}
       </div>
     </>
