@@ -12,10 +12,11 @@ import {
 import { ordersTrend, SERIES } from "@/lib/data";
 
 // Color follows the channel entity, consistent with the donut.
+// Stack order aqua→orange→blue→yellow is CVD-validated (worst adjacent ΔE 9.4).
 const seriesDefs = [
-  { key: "whatsapp", label: "WhatsApp", color: SERIES.green },
-  { key: "branch", label: "Branch", color: SERIES.blue },
-  { key: "online", label: "Online", color: SERIES.orange },
+  { key: "whatsapp", label: "WhatsApp", color: SERIES.aqua },
+  { key: "branch", label: "Branch", color: SERIES.orange },
+  { key: "online", label: "Online", color: SERIES.blue },
   { key: "phone", label: "Phone", color: SERIES.yellow },
 ];
 
