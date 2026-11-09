@@ -83,10 +83,7 @@ export default function Bar3D({
           },
           viewControl: {
             projection: "perspective",
-            autoRotate: true,
-            autoRotateDirection: "cw",
-            autoRotateSpeed: 12,
-            autoRotateAfterStill: 3,
+            autoRotate: false,
             distance: 210,
             alpha: 22,
             beta: 35,
