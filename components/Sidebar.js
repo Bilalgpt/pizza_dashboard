@@ -11,6 +11,7 @@ import {
   BarChart3,
   TrendingUp,
   Gem,
+  Clapperboard,
   MessageCircle,
 } from "lucide-react";
 import { brand } from "@/lib/data";
@@ -23,6 +24,7 @@ const nav = [
   { href: "/segments", label: "Segments & Flow", icon: Layers },
   { href: "/trends", label: "Trends & Forecast", icon: TrendingUp },
   { href: "/insights", label: "Customer Insights", icon: Gem },
+  { href: "/ads", label: "AI Ads", icon: Clapperboard },
   { href: "/reports", label: "Reports", icon: BarChart3 },
 ];
 
