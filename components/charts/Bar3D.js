@@ -83,12 +83,16 @@ export default function Bar3D({
           },
           viewControl: {
             projection: "perspective",
-            autoRotate: false,
+            autoRotate: true,
+            autoRotateDirection: "cw",
+            autoRotateSpeed: 12,
+            autoRotateAfterStill: 3,
             distance: 210,
             alpha: 22,
             beta: 35,
             rotateSensitivity: 1.2,
             zoomSensitivity: 0.6,
+            damping: 0.8,
           },
         },
         series: [
@@ -105,8 +109,14 @@ export default function Bar3D({
               label: { show: false },
               itemStyle: { color: "#ffffff" },
             },
+            // grow the bars up from the floor on load
+            animation: true,
+            animationDurationUpdate: 1200,
           },
         ],
+        // bar grow-in on first render
+        animationDuration: 1400,
+        animationEasing: "cubicOut",
       });
     })();
 
