@@ -3,6 +3,13 @@
 import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
+// .scene sets perspective: 1400px. Lifting the content by `LIFT`px toward the
+// camera enlarges its projection by 1400/(1400-LIFT); we cancel that with a
+// matching scale so the lifted layer projects to the exact card size — real
+// depth on tilt, but no content spilling past the rounded edges.
+const LIFT = 24;
+const SCALE = 1 - LIFT / 1400;
+
 export default function Panel({ title, subtitle, action, className = "", children, pad = true }) {
   const reduce = useReducedMotion();
   const ref = useRef(null);
@@ -15,7 +22,6 @@ export default function Panel({ title, subtitle, action, className = "", childre
     const r = el.getBoundingClientRect();
     const px = (e.clientX - r.left) / r.width;
     const py = (e.clientY - r.top) / r.height;
-    // gentle tilt — panels are large, so keep the angle small
     setT({ ry: (px - 0.5) * 6, rx: -(py - 0.5) * 6, gx: px * 100, gy: py * 100, on: true });
   }
   function onLeave() {
@@ -35,14 +41,13 @@ export default function Panel({ title, subtitle, action, className = "", childre
         style={{ transform: `rotateX(${t.rx}deg) rotateY(${t.ry}deg)` }}
         className="tilt relative h-full rounded-3xl"
       >
-        {/* clipped glass background + cursor glow — 2D layer sitting at the back */}
+        {/* glass background + cursor glow — clipped, sitting at the back */}
         <div
           className={`glass sheen absolute inset-0 overflow-hidden rounded-3xl transition-shadow duration-300 ${
             t.on
               ? "border-wa-green/35 shadow-[0_0_0_1px_rgba(37,211,102,0.18),0_30px_70px_-30px_rgba(37,211,102,0.4)]"
               : ""
           }`}
-          style={{ transform: "translateZ(0px)" }}
         >
           <div
             className="pointer-events-none absolute inset-0 transition-opacity duration-300"
@@ -53,26 +58,21 @@ export default function Panel({ title, subtitle, action, className = "", childre
           />
         </div>
 
-        {/* header — floats slightly forward */}
-        {(title || action) && (
-          <div
-            className="relative flex items-start justify-between gap-3 px-6 pt-5"
-            style={{ transform: "translateZ(18px)" }}
-          >
-            <div>
-              {title && <h3 className="text-[15px] font-semibold text-white">{title}</h3>}
-              {subtitle && <p className="mt-0.5 text-xs text-ink-muted">{subtitle}</p>}
-            </div>
-            {action}
-          </div>
-        )}
-
-        {/* plot / content — floats furthest forward for real depth on tilt */}
+        {/* content — lifted forward for depth, scale-compensated and clipped to the card */}
         <div
-          className={`relative ${pad ? "p-6" : ""}`}
-          style={{ transform: "translateZ(38px)" }}
+          className="relative h-full overflow-hidden rounded-3xl"
+          style={{ transform: `translateZ(${LIFT}px) scale(${SCALE})` }}
         >
-          {children}
+          {(title || action) && (
+            <div className="flex items-start justify-between gap-3 px-6 pt-5">
+              <div>
+                {title && <h3 className="text-[15px] font-semibold text-white">{title}</h3>}
+                {subtitle && <p className="mt-0.5 text-xs text-ink-muted">{subtitle}</p>}
+              </div>
+              {action}
+            </div>
+          )}
+          <div className={pad ? "p-6" : ""}>{children}</div>
         </div>
       </motion.section>
     </div>
